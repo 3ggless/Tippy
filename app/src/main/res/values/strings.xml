@@ -11,7 +11,9 @@
     <string name="continue_to_split">Continue</string>
     <string name="swipe_to_assign">Swipe the card toward a color to assign items</string>
     <string name="tip_percent">Tip: %1$s%%</string>
-    <string name="custom_tip_hint">Custom %</string>
+    <string name="edit_tip">Edit tip</string>
+    <string name="enter_tip_title">Enter tip percentage</string>
+    <string name="enter_tip_hint">Tip %</string>
     <string name="item_progress">Item %1$d of %2$d</string>
     <string name="all_items_assigned">All items assigned!</string>
     <string name="split_complete">Split complete</string>

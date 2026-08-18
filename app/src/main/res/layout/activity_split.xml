@@ -21,70 +21,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tipLabel"
+        <LinearLayout
+            android:id="@+id/tipHeaderRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="Tip: 18%" />
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingVertical="4dp">
+
+            <TextView
+                android:id="@+id/tipLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="Tip: 0%" />
+
+            <ImageView
+                android:id="@+id/tipEditIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/edit_tip"
+                android:src="@drawable/ic_edit_tip" />
+        </LinearLayout>
 
         <com.google.android.material.slider.Slider
             android:id="@+id/tipSlider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:stepSize="1"
-            android:value="18"
+            android:value="0"
             android:valueFrom="0"
             android:valueTo="30" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipTip15"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="15%" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipTip18"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="18%" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipTip20"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="20%" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/customTipLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:hint="@string/custom_tip_hint">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/customTipInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
