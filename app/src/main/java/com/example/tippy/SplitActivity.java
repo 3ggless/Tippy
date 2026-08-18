@@ -97,7 +97,7 @@ public class SplitActivity extends AppCompatActivity {
         singlePartyMode = getIntent().getBooleanExtra(EXTRA_SINGLE_PARTY, false);
 
         if (currencySymbol == null) {
-            currencySymbol = CurrencyUtils.DEFAULT_SYMBOL;
+            currencySymbol = CurrencyUtils.NO_SYMBOL;
         }
         if (items == null || parties == null || parties.isEmpty()) {
             finish();
@@ -413,11 +413,13 @@ public class SplitActivity extends AppCompatActivity {
         for (Party party : parties) {
             double subtotal = 0;
             List<String> itemNames = new ArrayList<>();
+            List<String> itemLines = new ArrayList<>();
 
             for (ReceiptItem item : items) {
                 if (item.getAssignedPartyIndex() == party.getIndex()) {
                     subtotal += item.getPrice();
                     itemNames.add(item.getName());
+                    itemLines.add(item.getName() + "  " + CurrencyUtils.format(currencySymbol, item.getPrice()));
                 }
             }
 
@@ -425,7 +427,7 @@ public class SplitActivity extends AppCompatActivity {
             double total = subtotal + tip;
 
             compactSummaries.add(new PartyTotalAdapter.PartySummary(party, total, itemNames));
-            finalRows.add(new FinalSummaryAdapter.FinalRow(party, total));
+            finalRows.add(new FinalSummaryAdapter.FinalRow(party, total, itemLines));
         }
 
         if (!splitComplete) {

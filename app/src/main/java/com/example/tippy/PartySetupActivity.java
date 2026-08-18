@@ -53,7 +53,7 @@ public class PartySetupActivity extends AppCompatActivity {
         items = loadedItems;
         currencySymbol = getIntent().getStringExtra(MainActivity.EXTRA_CURRENCY);
         if (currencySymbol == null) {
-            currencySymbol = CurrencyUtils.DEFAULT_SYMBOL;
+            currencySymbol = CurrencyUtils.NO_SYMBOL;
         }
 
         if (items == null || items.isEmpty()) {

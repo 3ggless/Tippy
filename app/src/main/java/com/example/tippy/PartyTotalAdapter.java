@@ -28,10 +28,10 @@ public class PartyTotalAdapter extends RecyclerView.Adapter<PartyTotalAdapter.Vi
     }
 
     private final List<PartySummary> summaries = new ArrayList<>();
-    private String currencySymbol = CurrencyUtils.DEFAULT_SYMBOL;
+    private String currencySymbol = CurrencyUtils.NO_SYMBOL;
 
     void setCurrencySymbol(String currencySymbol) {
-        this.currencySymbol = currencySymbol;
+        this.currencySymbol = currencySymbol != null ? currencySymbol : CurrencyUtils.NO_SYMBOL;
     }
 
     void setSummaries(List<PartySummary> newSummaries) {
