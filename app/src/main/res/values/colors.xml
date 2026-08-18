@@ -2,4 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="party_red">#E84855</color>
+    <color name="party_blue">#3A86FF</color>
+    <color name="party_green">#2DC653</color>
+    <color name="party_yellow">#FFBE0B</color>
+    <color name="party_yellow_text">#FF1A1A1A</color>
+    <color name="background">#FFF5F5F5</color>
+    <color name="card_background">#FFFFFFFF</color>
+    <color name="text_primary">#DE000000</color>
+    <color name="text_secondary">#99000000</color>
 </resources>
