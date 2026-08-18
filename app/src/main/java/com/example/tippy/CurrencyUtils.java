@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public final class CurrencyUtils {
 
-    public static final String DEFAULT_SYMBOL = "$";
+    public static final String NO_SYMBOL = "";
 
     private static final Pattern SYMBOL_BEFORE_AMOUNT = Pattern.compile(
             "([€£$¥₹]|CHF|kr|R\\$)\\s*\\d"
@@ -19,7 +19,7 @@ public final class CurrencyUtils {
 
     public static String detectFromReceipt(String rawText) {
         if (rawText == null || rawText.isBlank()) {
-            return DEFAULT_SYMBOL;
+            return NO_SYMBOL;
         }
 
         Map<String, Integer> counts = new HashMap<>();
@@ -29,7 +29,7 @@ public final class CurrencyUtils {
             counts.put(symbol, counts.getOrDefault(symbol, 0) + 1);
         }
 
-        String best = DEFAULT_SYMBOL;
+        String best = NO_SYMBOL;
         int bestCount = 0;
         for (Map.Entry<String, Integer> entry : counts.entrySet()) {
             if (entry.getValue() > bestCount) {
@@ -41,12 +41,14 @@ public final class CurrencyUtils {
     }
 
     public static String format(String symbol, double amount) {
-        String safeSymbol = symbol == null || symbol.isBlank() ? DEFAULT_SYMBOL : symbol;
         String formattedAmount = String.format(Locale.US, "%.2f", amount);
-
-        if ("kr".equalsIgnoreCase(safeSymbol) || "CHF".equalsIgnoreCase(safeSymbol)) {
-            return formattedAmount + " " + safeSymbol;
+        if (symbol == null || symbol.isBlank()) {
+            return formattedAmount;
         }
-        return safeSymbol + formattedAmount;
+
+        if ("kr".equalsIgnoreCase(symbol) || "CHF".equalsIgnoreCase(symbol)) {
+            return formattedAmount + " " + symbol;
+        }
+        return symbol + formattedAmount;
     }
 }

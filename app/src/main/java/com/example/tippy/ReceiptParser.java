@@ -44,10 +44,10 @@ public final class ReceiptParser {
     public static ParseResult parse(String rawText) {
         ArrayList<ReceiptItem> items = new ArrayList<>();
         if (rawText == null || rawText.isBlank()) {
-            return new ParseResult(items, CurrencyUtils.DEFAULT_SYMBOL);
+            return new ParseResult(items, CurrencyUtils.NO_SYMBOL);
         }
 
-        String currencySymbol = CurrencyUtils.detectFromReceipt(rawText);
+        String currencySymbol = CurrencyUtils.NO_SYMBOL;
         String[] lines = rawText.split("\\r?\\n");
         for (String line : lines) {
             String trimmed = line.trim();
@@ -68,6 +68,10 @@ public final class ReceiptParser {
                 }
             }
         }
+
+        if (CurrencyUtils.NO_SYMBOL.equals(currencySymbol)) {
+            currencySymbol = CurrencyUtils.detectFromReceipt(rawText);
+        }
         return new ParseResult(items, currencySymbol);
     }
 
@@ -79,7 +83,7 @@ public final class ReceiptParser {
         items.add(new ReceiptItem("Soda", 3.00));
         items.add(new ReceiptItem("Pasta", 16.75));
         items.add(new ReceiptItem("Wine Glass", 9.50));
-        return new ParseResult(items, CurrencyUtils.DEFAULT_SYMBOL);
+        return new ParseResult(items, CurrencyUtils.NO_SYMBOL);
     }
 
     private static double parseAmount(String amountText) {

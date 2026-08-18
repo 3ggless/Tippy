@@ -35,56 +35,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:stepSize="1"
-            android:value="18"
+            android:value="0"
             android:valueFrom="0"
             android:valueTo="30" />
 
-        <LinearLayout
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/customTipLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_marginTop="4dp"
+            android:hint="@string/custom_tip_hint">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipTip15"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/customTipInput"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="15%" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipTip18"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="18%" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipTip20"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="20%" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/customTipLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:hint="@string/custom_tip_hint">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/customTipInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
     <LinearLayout

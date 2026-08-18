@@ -18,18 +18,20 @@ public class FinalSummaryAdapter extends RecyclerView.Adapter<FinalSummaryAdapte
     static class FinalRow {
         final Party party;
         final double total;
+        final List<String> itemLines;
 
-        FinalRow(Party party, double total) {
+        FinalRow(Party party, double total, List<String> itemLines) {
             this.party = party;
             this.total = total;
+            this.itemLines = itemLines;
         }
     }
 
     private final List<FinalRow> rows = new ArrayList<>();
-    private String currencySymbol = CurrencyUtils.DEFAULT_SYMBOL;
+    private String currencySymbol = CurrencyUtils.NO_SYMBOL;
 
     void setCurrencySymbol(String currencySymbol) {
-        this.currencySymbol = currencySymbol;
+        this.currencySymbol = currencySymbol != null ? currencySymbol : CurrencyUtils.NO_SYMBOL;
     }
 
     void setRows(List<FinalRow> newRows) {
@@ -60,12 +62,14 @@ public class FinalSummaryAdapter extends RecyclerView.Adapter<FinalSummaryAdapte
         private final View finalPartyColorDot;
         private final TextView finalPartyNameText;
         private final TextView finalPartyAmountText;
+        private final TextView finalPartyItemsText;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             finalPartyColorDot = itemView.findViewById(R.id.finalPartyColorDot);
             finalPartyNameText = itemView.findViewById(R.id.finalPartyNameText);
             finalPartyAmountText = itemView.findViewById(R.id.finalPartyAmountText);
+            finalPartyItemsText = itemView.findViewById(R.id.finalPartyItemsText);
         }
 
         void bind(FinalRow row, String currencySymbol) {
@@ -76,6 +80,12 @@ public class FinalSummaryAdapter extends RecyclerView.Adapter<FinalSummaryAdapte
 
             finalPartyNameText.setText(row.party.getName());
             finalPartyAmountText.setText(CurrencyUtils.format(currencySymbol, row.total));
+
+            if (row.itemLines.isEmpty()) {
+                finalPartyItemsText.setText(R.string.no_items_yet);
+            } else {
+                finalPartyItemsText.setText(String.join("\n", row.itemLines));
+            }
         }
     }
 }

@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.chip.Chip;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -41,7 +40,7 @@ public class SplitActivity extends AppCompatActivity {
     private ArrayList<Party> parties;
     private String currencySymbol;
     private boolean singlePartyMode;
-    private int tipPercent = 18;
+    private int tipPercent = 0;
     private boolean updatingTipFromCode;
 
     private TextView tipLabel;
@@ -97,7 +96,7 @@ public class SplitActivity extends AppCompatActivity {
         singlePartyMode = getIntent().getBooleanExtra(EXTRA_SINGLE_PARTY, false);
 
         if (currencySymbol == null) {
-            currencySymbol = CurrencyUtils.DEFAULT_SYMBOL;
+            currencySymbol = CurrencyUtils.NO_SYMBOL;
         }
         if (items == null || parties == null || parties.isEmpty()) {
             finish();
@@ -162,14 +161,6 @@ public class SplitActivity extends AppCompatActivity {
             }
         });
 
-        Chip chip15 = findViewById(R.id.chipTip15);
-        Chip chip18 = findViewById(R.id.chipTip18);
-        Chip chip20 = findViewById(R.id.chipTip20);
-
-        chip15.setOnClickListener(v -> setTipPercent(15, true));
-        chip18.setOnClickListener(v -> setTipPercent(18, true));
-        chip20.setOnClickListener(v -> setTipPercent(20, true));
-
         customTipInput.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 applyCustomTipInput();
@@ -221,10 +212,14 @@ public class SplitActivity extends AppCompatActivity {
         if (syncSlider && percent <= tipSlider.getValueTo()) {
             tipSlider.setValue(percent);
         }
-        String customText = String.valueOf(percent);
-        if (!customText.equals(customTipInput.getText() != null ? customTipInput.getText().toString() : "")) {
-            customTipInput.setText(customText);
-            customTipInput.setSelection(customText.length());
+        if (percent == 0) {
+            customTipInput.setText("");
+        } else {
+            String customText = String.valueOf(percent);
+            if (!customText.equals(customTipInput.getText() != null ? customTipInput.getText().toString() : "")) {
+                customTipInput.setText(customText);
+                customTipInput.setSelection(customText.length());
+            }
         }
         updatingTipFromCode = false;
         updateTotals();
@@ -427,11 +422,13 @@ public class SplitActivity extends AppCompatActivity {
         for (Party party : parties) {
             double subtotal = 0;
             List<String> itemNames = new ArrayList<>();
+            List<String> itemLines = new ArrayList<>();
 
             for (ReceiptItem item : items) {
                 if (item.getAssignedPartyIndex() == party.getIndex()) {
                     subtotal += item.getPrice();
                     itemNames.add(item.getName());
+                    itemLines.add(item.getName() + "  " + CurrencyUtils.format(currencySymbol, item.getPrice()));
                 }
             }
 
@@ -439,7 +436,7 @@ public class SplitActivity extends AppCompatActivity {
             double total = subtotal + tip;
 
             compactSummaries.add(new PartyTotalAdapter.PartySummary(party, total, itemNames));
-            finalRows.add(new FinalSummaryAdapter.FinalRow(party, total));
+            finalRows.add(new FinalSummaryAdapter.FinalRow(party, total, itemLines));
         }
 
         if (!splitComplete) {
