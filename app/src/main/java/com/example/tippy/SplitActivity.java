@@ -3,11 +3,8 @@ package com.example.tippy;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,8 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +34,8 @@ public class SplitActivity extends AppCompatActivity {
     public static final String EXTRA_SINGLE_PARTY = "split_single_party";
 
     private static final float SWIPE_THRESHOLD = 120f;
+    private static final int MAX_TIP_PERCENT = 100;
+    private static final int SLIDER_DEFAULT_MAX = 30;
 
     private ArrayList<ReceiptItem> items;
     private ArrayList<Party> parties;
@@ -44,6 +45,7 @@ public class SplitActivity extends AppCompatActivity {
     private boolean updatingTipFromCode;
 
     private TextView tipLabel;
+    private LinearLayout tipHeaderRow;
     private TextView itemProgressText;
     private TextView itemNameText;
     private TextView itemPriceText;
@@ -60,7 +62,6 @@ public class SplitActivity extends AppCompatActivity {
     private View grandTotalBar;
 
     private Slider tipSlider;
-    private TextInputEditText customTipInput;
 
     private PartyTotalAdapter partyTotalAdapter;
     private FinalSummaryAdapter finalSummaryAdapter;
@@ -121,6 +122,7 @@ public class SplitActivity extends AppCompatActivity {
 
     private void bindViews() {
         tipLabel = findViewById(R.id.tipLabel);
+        tipHeaderRow = findViewById(R.id.tipHeaderRow);
         itemProgressText = findViewById(R.id.itemProgressText);
         itemNameText = findViewById(R.id.itemNameText);
         itemPriceText = findViewById(R.id.itemPriceText);
@@ -136,7 +138,6 @@ public class SplitActivity extends AppCompatActivity {
         receiptTotalWithTipText = findViewById(R.id.receiptTotalWithTipText);
         grandTotalBar = findViewById(R.id.grandTotalBar);
         tipSlider = findViewById(R.id.tipSlider);
-        customTipInput = findViewById(R.id.customTipInput);
 
         RecyclerView partyTotalsRecycler = findViewById(R.id.partyTotalsRecycler);
         partyTotalAdapter = new PartyTotalAdapter();
@@ -157,72 +158,62 @@ public class SplitActivity extends AppCompatActivity {
 
         tipSlider.addOnChangeListener((slider, value, fromUser) -> {
             if (fromUser && !updatingTipFromCode) {
-                setTipPercent(Math.round(value), true);
+                setTipPercent(Math.round(value));
             }
         });
 
-        customTipInput.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                applyCustomTipInput();
-                customTipInput.clearFocus();
-                return true;
-            }
-            return false;
-        });
-
-        customTipInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (updatingTipFromCode || s == null || s.toString().trim().isEmpty()) {
-                    return;
-                }
-                applyCustomTipInput();
-            }
-        });
+        tipHeaderRow.setOnClickListener(v -> showTipEditDialog());
     }
 
-    private void applyCustomTipInput() {
-        if (customTipInput.getText() == null) {
-            return;
-        }
-        String text = customTipInput.getText().toString().trim();
-        if (text.isEmpty()) {
-            return;
-        }
-        try {
-            float value = Float.parseFloat(text);
-            int rounded = Math.round(Math.max(0f, Math.min(value, 100f)));
-            setTipPercent(rounded, false);
-        } catch (NumberFormatException ignored) {
-        }
+    private void showTipEditDialog() {
+        TextInputLayout inputLayout = new TextInputLayout(this);
+        inputLayout.setHint(getString(R.string.enter_tip_hint));
+        int horizontalPadding = (int) (16 * getResources().getDisplayMetrics().density);
+        inputLayout.setPadding(horizontalPadding, 0, horizontalPadding, 0);
+
+        TextInputEditText input = new TextInputEditText(inputLayout.getContext());
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER
+                | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        input.setText(String.valueOf(tipPercent));
+        input.setSelection(input.getText().length());
+        inputLayout.addView(input);
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.enter_tip_title)
+                .setView(inputLayout)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    String text = input.getText() != null ? input.getText().toString().trim() : "";
+                    if (text.isEmpty()) {
+                        setTipPercent(0);
+                        return;
+                    }
+                    try {
+                        float value = Float.parseFloat(text);
+                        int rounded = Math.round(Math.max(0f, Math.min(value, MAX_TIP_PERCENT)));
+                        setTipPercent(rounded);
+                    } catch (NumberFormatException ignored) {
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
-    private void setTipPercent(int percent, boolean syncSlider) {
+    private void setTipPercent(int percent) {
         tipPercent = percent;
         updatingTipFromCode = true;
         updateTipLabel(tipPercent);
-        if (syncSlider && percent <= tipSlider.getValueTo()) {
-            tipSlider.setValue(percent);
-        }
-        if (percent == 0) {
-            customTipInput.setText("");
-        } else {
-            String customText = String.valueOf(percent);
-            if (!customText.equals(customTipInput.getText() != null ? customTipInput.getText().toString() : "")) {
-                customTipInput.setText(customText);
-                customTipInput.setSelection(customText.length());
-            }
-        }
+        syncSliderToTip(percent);
         updatingTipFromCode = false;
         updateTotals();
+    }
+
+    private void syncSliderToTip(int percent) {
+        if (percent > tipSlider.getValueTo()) {
+            tipSlider.setValueTo(Math.min(percent, MAX_TIP_PERCENT));
+        } else if (percent <= SLIDER_DEFAULT_MAX && tipSlider.getValueTo() > SLIDER_DEFAULT_MAX) {
+            tipSlider.setValueTo(SLIDER_DEFAULT_MAX);
+        }
+        tipSlider.setValue(Math.min(percent, tipSlider.getValueTo()));
     }
 
     private void updateTipLabel(int percent) {
